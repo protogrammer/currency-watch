@@ -1,0 +1,30 @@
+{
+    "name": "currency-watch",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "npm run compile && node ./dist/index.js",
+        "startDev": "set DEV_MODE=1&&npm run start",
+        "compile": "tsc",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^26.6.5",
+        "@types/sqlite3": "^3.1.11",
+        "eslint": "^10.12.0",
+        "nodemon": "^3.1.14",
+        "prettier": "^3.9.10",
+        "ts-node": "^10.9.2",
+        "typescript": "^7.0.2"
+    },
+    "dependencies": {
+        "axios": "^1.20.0",
+        "express": "^5.3.0",
+        "sqlite3": "^6.0.1"
+    }
+}
