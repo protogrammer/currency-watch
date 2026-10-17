@@ -46,7 +46,10 @@ export class SQLiteStore implements CurrencyStore {
     async initDB(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.database.serialize(() => {
-                this.database.exec("PRAGMA foreign_keys = ON;");
+                this.database.exec(
+                    "PRAGMA foreign_keys = ON;",
+                    handleErr(resolve, reject),
+                );
                 this.database.exec(
                     `CREATE TABLE IF NOT EXISTS currency (
                         id INTEGER PRIMARY KEY,
