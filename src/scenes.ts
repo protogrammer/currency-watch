@@ -93,7 +93,7 @@ export class Scenes implements ScenesList {
             }
             const now = new Date();
             console.log(
-                `[${now.toLocaleString()}] loaded ${successfulLoads} out of ${currencies.length} currencies`,
+                `[${now.toISOString()}] loaded ${successfulLoads} out of ${currencies.length} currencies`,
             );
         } catch (e) {
             console.error(`error loading list in autoLoad: ${e}`);

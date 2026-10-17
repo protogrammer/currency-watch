@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 
-import { ScenesList } from "./types";
+import { isCurrencyIdHandler, ScenesList } from "./types";
 import {
     queryBoolean,
     queryCurrencyHandler,
@@ -50,6 +50,8 @@ export const expressApp = (
 
         const [currency, added, record] = await scenes.add(handler, load);
 
+        resp.status(201);
+        resp.location(`/info?id=${currency.id}`);
         resp.json({
             ...currency,
             added,
@@ -72,6 +74,14 @@ export const expressApp = (
     app.post("/load", async (req, resp) => {
         const handler = queryCurrencyHandler(req.query);
         const record = await scenes.load(handler);
+        resp.status(201);
+        resp.location(
+            `/price?${
+                isCurrencyIdHandler(handler)
+                    ? "id=" + handler.id
+                    : "symbol=" + handler.symbol
+            }&after=${record.time.toISOString()}&asc=1`,
+        );
         resp.json(record);
     });
 
