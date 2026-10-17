@@ -55,7 +55,7 @@ export const expressApp = (
         resp.json({
             ...currency,
             added,
-            ...(record != null ? { price: record } : {}),
+            ...(record != null ? { latestRecord: record } : {}),
         });
     });
 

@@ -1,0 +1,277 @@
+openapi: 3.2.1
+
+info:
+  title: Currency Watch RESTful API
+  description: An API that manages cryptocurrencies and their prices
+  version: 1.0.0
+
+servers:
+  - url: https://localhost:{port}
+    description: Production server
+    variables:
+      port:
+        default: "443"
+        description: Server port
+
+security:
+  - bearerAuth: []
+
+paths:
+  /list:
+    get:
+      operationId: list
+      summary: Returns watching currencies list
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Currency"
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+  /add:
+    post:
+      operationId: add
+      summary: Adds a currency loaded from external API
+      parameters:
+        - $ref: "#/components/parameters/CurrencyIdHandler"
+        - $ref: "#/components/parameters/CurrencySymbolicHandler"
+        - name: load
+          in: query
+          description: Load currency's price after adding it to database?
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "201":
+          description: Successfully added
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/CurrencyInfo"
+                  - type: object
+                    properties:
+                      added:
+                        type: boolean
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+  /info:
+    get:
+      operationId: info
+      summary: Get information about currency in database
+      parameters:
+        - $ref: "#/components/parameters/CurrencyIdHandler"
+        - $ref: "#/components/parameters/CurrencySymbolicHandler"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrencyInfo"
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+  /remove-from-list:
+    delete:
+      operationId: removeFromList
+      summary: Remove currency from watch list
+      parameters:
+        - $ref: "#/components/parameters/CurrencyIdHandler"
+        - $ref: "#/components/parameters/CurrencySymbolicHandler"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  removed:
+                    type: boolean
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+  /load:
+    post:
+      operationId: load
+      summary: Loads currency price information from API
+      parameters:
+        - $ref: "#/components/parameters/CurrencyIdHandler"
+        - $ref: "#/components/parameters/CurrencySymbolicHandler"
+      responses:
+        "201":
+          description: Loaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceRecord"
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+  /price:
+    get:
+      operationId: price
+      summary: Get currency's price in specific period of time
+      parameters:
+        - $ref: "#/components/parameters/CurrencyIdHandler"
+        - $ref: "#/components/parameters/CurrencySymbolicHandler"
+        - $ref: "#/components/parameters/After"
+        - $ref: "#/components/parameters/Before"
+        - $ref: "#/components/parameters/Asc"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PriceRecord"
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+  /erase:
+    delete:
+      operationId: erase
+      summary: Erases currency's price records in specific period of time
+      parameters:
+        - $ref: "#/components/parameters/CurrencyIdHandler"
+        - $ref: "#/components/parameters/CurrencySymbolicHandler"
+        - $ref: "#/components/parameters/After"
+        - $ref: "#/components/parameters/Before"
+        - $ref: "#/components/parameters/Asc"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erased:
+                    type: integer
+                    minimum: 0
+        "4XX":
+          $ref: "#/components/responses/Error"
+        "5XX":
+          $ref: "#/components/responses/Error"
+
+components:
+  schemas:
+    Currency:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: integer
+        symbol:
+          type: string
+    PriceRecord:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        value:
+          type:
+            - number
+            - "null"
+    CurrencyInfo:
+      allOf:
+        - $ref: "#/components/schemas/Currency"
+        - type: object
+          properties:
+            latestRecord:
+              $ref: "#/components/schemas/PriceRecord"
+  parameters:
+    CurrencyIdHandler:
+      name: id
+      in: query
+      description: Currency's id on CoinMarketCapAPI
+      required: false
+      schema:
+        type: integer
+    CurrencySymbolicHandler:
+      name: symbol
+      in: query
+      description: Currency's symbol on CoinMarketCapAPI
+      required: false
+      schema:
+        type: string
+    After:
+      name: after
+      in: query
+      description: search for records after this time (inclusively)
+      required: false
+      schema:
+        type: string
+        format: date-time
+    Before:
+      name: before
+      in: query
+      description: search for records before this time (exclusively)
+      required: false
+      schema:
+        type: string
+        format: date-time
+    Asc:
+      name: asc
+      in: query
+      description: sort records in ascending order
+      required: false
+      schema:
+        type: boolean
+        default: false
+    Offset:
+      name: offset
+      in: query
+      description: number of records to skip
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    Limit:
+      name: limit
+      in: query
+      description: number of records to return
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 1
+  responses:
+    Error:
+      description: unexpected error occurred
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  securitySchemes:
+    bearerAuth:
+      description: Bearer token authentification
+      type: http
+      scheme: Bearer
