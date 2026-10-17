@@ -48,7 +48,7 @@ export class SQLiteStore implements CurrencyStore {
             this.database.serialize(() => {
                 this.database.exec(
                     "PRAGMA foreign_keys = ON;",
-                    handleErr(ignore, reject),
+                    handleErr(ignore, console.warn),
                 );
                 this.database.exec(
                     `CREATE TABLE IF NOT EXISTS currency (
@@ -56,7 +56,7 @@ export class SQLiteStore implements CurrencyStore {
                         name TEXT NOT NULL,
                         symbol TEXT NOT NULL
                     );`,
-                    handleErr(ignore, reject),
+                    handleErr(ignore, console.warn),
                 );
                 this.database.exec(
                     `CREATE TABLE IF NOT EXISTS price_record (
@@ -126,7 +126,7 @@ export class SQLiteStore implements CurrencyStore {
                         ? reject(err)
                         : row != null
                           ? resolve(row)
-                          : new InvalidCurrencyHandlerError(handler),
+                          : reject(new InvalidCurrencyHandlerError(handler)),
             );
         });
     }
