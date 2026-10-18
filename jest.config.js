@@ -1,7 +1,7 @@
 try {
   process.loadEnvFile(".env.test");
 } catch (e) {
-  console.warn("error loading .env.test:", e);
+  console.log("error loading .env.test");
 }
 
 /** @type {import("jest").Config} **/
