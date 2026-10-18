@@ -1,4 +1,8 @@
-process.loadEnvFile(".env.test");
+try {
+  process.loadEnvFile(".env.test");
+} catch (e) {
+  console.warn("error loading .env.test:", e);
+}
 
 /** @type {import("jest").Config} **/
 module.exports = {
