@@ -198,9 +198,10 @@ export class SQLiteStore implements CurrencyStore {
 
     protected static priceSqlStatement(
         asc: boolean,
-        includeValue: boolean = true,
+        fields: [keyof CurrencyPriceRecord, ...(keyof CurrencyPriceRecord)[]],
     ): string {
-        return `SELECT time${includeValue ? ", value" : ""} FROM price_record
+        const fieldsSql = (fields as string[]).reduce((a, b) => a + ", " + b);
+        return `SELECT ${fieldsSql} FROM price_record
                 WHERE id = $id
                 AND ($after IS NULL OR $after <= time)
                 AND ($until IS NULL OR time < $until)
@@ -229,7 +230,8 @@ export class SQLiteStore implements CurrencyStore {
         request: CurrencySearchRequest,
     ): Promise<CurrencyPriceRecord[]> {
         const params = await this.preparePriceRequest(request);
-        const sql = SQLiteStore.priceSqlStatement(request.asc) + ";";
+        const sql =
+            SQLiteStore.priceSqlStatement(request.asc, ["time", "value"]) + ";";
 
         return new Promise((resolve, reject) => {
             this.database.all(
@@ -245,7 +247,7 @@ export class SQLiteStore implements CurrencyStore {
 
     async erase(request: CurrencySearchRequest): Promise<number> {
         const params = await this.preparePriceRequest(request);
-        const subquery = SQLiteStore.priceSqlStatement(request.asc, false);
+        const subquery = SQLiteStore.priceSqlStatement(request.asc, ["time"]);
         const sql = `DELETE FROM price_record WHERE id = $id AND time IN (${subquery});`;
 
         return new Promise((resolve, reject) => {

@@ -48,15 +48,11 @@ export const expressApp = (
 
         const load = queryBoolean("load", req.query);
 
-        const [currency, added, record] = await scenes.add(handler, load);
+        const info = await scenes.add(handler, load);
 
         resp.status(201);
-        resp.location(`/info?id=${currency.id}`);
-        resp.json({
-            ...currency,
-            added,
-            ...(record != null ? { latestRecord: record } : {}),
-        });
+        resp.location(`/info?id=${info.id}`);
+        resp.json(info);
     });
 
     app.get("/info", async (req, resp) => {

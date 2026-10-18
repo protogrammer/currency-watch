@@ -19,10 +19,14 @@ export class Scenes implements ScenesList {
     async add(
         handler: CurrencyHandler,
         load: boolean,
-    ): Promise<[Currency, boolean, CurrencyPriceRecord | null]> {
+    ): Promise<CurrencyInfo & { added: boolean }> {
         const currency = await this.api.getCurrency(handler);
         const added = await this.store.add(currency);
-        return [currency, added, load ? await this.load(handler) : null];
+        return {
+            ...currency,
+            added,
+            ...(load ? { latestRecord: await this.load(handler) } : {}),
+        };
     }
 
     async load(handler: CurrencyHandler): Promise<CurrencyPriceRecord> {

@@ -51,7 +51,7 @@ export type ScenesList = CommonScenesList & {
     add(
         handler: CurrencyHandler,
         load: boolean,
-    ): Promise<[Currency, boolean, CurrencyPriceRecord | null]>; // /add
+    ): Promise<CurrencyInfo & { added: boolean }>; // /add
     info(handler: CurrencyHandler): Promise<CurrencyInfo>; // /info
     load(handler: CurrencyHandler): Promise<CurrencyPriceRecord>; // /load
     autoLoad(delayMs: number): NodeJS.Timeout;
