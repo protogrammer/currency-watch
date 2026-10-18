@@ -13,7 +13,7 @@
     // For nodejs:
     "lib": ["esnext"],
     // and npm install -D @types/node
-    "types": ["node", "express", "sqlite3"],
+    "types": ["node", "express", "sqlite3", "jest"],
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -40,5 +40,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
 }
